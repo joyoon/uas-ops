@@ -23,8 +23,12 @@ export default function LoginPage() {
     if (res.ok) {
       router.push("/dashboard");
     } else {
-      const data = await res.json();
-      setError(data.error ?? "Login failed");
+      try {
+        const data = await res.json();
+        setError(data.error ?? "Login failed");
+      } catch {
+        setError("Login failed — check server logs");
+      }
       setLoading(false);
     }
   }
