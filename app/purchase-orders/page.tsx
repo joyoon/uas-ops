@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import Nav from "@/components/Nav";
+import NewPurchaseOrderForm from "@/components/NewPurchaseOrderForm";
 
 const STATUS_STYLES: Record<string, string> = {
   draft: "bg-gray-700 text-gray-300",
@@ -15,6 +16,11 @@ const STATUS_STYLES: Record<string, string> = {
 export default async function PurchaseOrdersPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+
+  const [suppliersResult, partsResult] = await Promise.all([
+    db.query("SELECT id, name FROM suppliers ORDER BY name"),
+    db.query("SELECT id, sku, name, unit_cost FROM parts ORDER BY category, name"),
+  ]);
 
   const orders = await db.query(`
     SELECT po.*, s.name AS supplier_name,
@@ -36,7 +42,15 @@ export default async function PurchaseOrdersPage() {
       <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-semibold text-gray-100">Purchase Orders</h1>
-          <span className="text-sm text-gray-500">{orders.rows.length} orders</span>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-500">{orders.rows.length} orders</span>
+            {(session.role === "admin" || session.role === "engineer") && (
+              <NewPurchaseOrderForm
+                suppliers={suppliersResult.rows}
+                parts={partsResult.rows}
+              />
+            )}
+          </div>
         </div>
 
         <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
