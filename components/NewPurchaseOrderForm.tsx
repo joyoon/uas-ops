@@ -33,7 +33,7 @@ export default function NewPurchaseOrderForm({
     const part = parts.find((p) => p.id === Number(selectedPart));
     if (!part) return;
     if (items.some((i) => i.part_id === part.id)) return;
-    setItems([...items, { part_id: part.id, part_name: part.name, quantity: qty, unit_cost: part.unit_cost ?? 0 }]);
+    setItems([...items, { part_id: part.id, part_name: part.name, quantity: qty, unit_cost: Number(part.unit_cost) ?? 0 }]);
     setSelectedPart("");
     setQty(1);
   }
