@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import Nav from "@/components/Nav";
 import AiAssistant from "@/components/AiAssistant";
+import ReorderButton from "@/components/ReorderButton";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -38,7 +39,10 @@ export default async function DashboardPage() {
     <div>
       <Nav userName={session.name} role={session.role} />
       <main className="max-w-7xl mx-auto px-6 py-8">
-        <h1 className="text-xl font-semibold text-gray-100 mb-6">Operations Dashboard</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl font-semibold text-gray-100">Operations Dashboard</h1>
+          {(session.role === "admin" || session.role === "engineer") && <ReorderButton />}
+        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
